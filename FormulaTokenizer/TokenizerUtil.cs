@@ -2,6 +2,6 @@ namespace FormulaTokenizer;
 
 public static class TokenizerUtil
 {
-    public static IEnumerable<Token> Token(this IEnumerable<char> characters)
+    public static IEnumerable<Token> Tokenize(this IEnumerable<char> characters)
         => (new Tokenizer()).Tokenize(characters);
 }

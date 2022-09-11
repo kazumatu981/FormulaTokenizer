@@ -4,15 +4,14 @@ public enum TokenType
 {
     Unknown,
     Number,
-    Variable,
     Operator,
-    BraceStart,
-    BraceEnd
 }
 public abstract class Token
 {
     public readonly TokenType Type;
     public readonly string Text;
+
+    public Token? Parent;
 
     public abstract int GetValue();
 

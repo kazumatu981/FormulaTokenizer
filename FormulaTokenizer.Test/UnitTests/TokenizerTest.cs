@@ -24,11 +24,12 @@ public class UnitTest1
             new OperatorToken( "+"),
             new NumberToken( "234"),
         };
-        var tokenizer = new Tokenizer();
 
-        var actual = tokenizer.Tokenize(test.GetChars());
-
+        var actual = test
+            .GetChars()
+            .Tokenize();
         Assert.Equal(expected, actual, toeknComparer);
+
     }
     [Theory]
     [InlineData("111+0*124")]
@@ -47,9 +48,10 @@ public class UnitTest1
             new OperatorToken( "*"),
             new NumberToken(  "124"),
         };
-        var tokenizer = new Tokenizer();
 
-        var actual = tokenizer.Tokenize(test.GetChars());
+        var actual = test
+            .GetChars()
+            .Tokenize();
 
         Assert.Equal(expected, actual, toeknComparer);
     }
@@ -70,9 +72,10 @@ public class UnitTest1
             new OperatorToken( "-"),
             new NumberToken( "124"),
         };
-        var tokenizer = new Tokenizer();
 
-        var actual = tokenizer.Tokenize(test.GetChars());
+        var actual = test
+           .GetChars()
+           .Tokenize();
 
         Assert.Equal(expected, actual, toeknComparer);
     }

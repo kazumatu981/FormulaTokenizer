@@ -8,6 +8,8 @@ public class OperatorToken : Token
     public const string Devide = "/";
     public Token? LeftHand { get; set; }
     public Token? RightHand { get; set; }
+    public bool IsPlusMinus { get => Text == Plus || Text == Minus; }
+
     public OperatorToken(string text) : base(TokenType.Operator, text) { }
 
     public override int GetValue()
@@ -24,6 +26,4 @@ public class OperatorToken : Token
             (_, _, Devide) => LeftHand.GetValue() / RightHand.GetValue(),
             _ => throw new NotImplementedException()
         };
-
-
 }

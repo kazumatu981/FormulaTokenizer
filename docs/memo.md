@@ -43,3 +43,27 @@ stateDiagram-v2
 | **Num0** | *error*            | *error*            | `DrainAndNewToken` | `Drain`    | `Drain` |
 | **Num1** | `KeepCharacter`    | `KeepCharacter`    | `DrainAndNewToken` | `Drain`    | `Drain` |
 | **Op**   | `DrainAndNewToken` | `DrainAndNewToken` | `DrainAndNewToken` | `Drain`    | `Drain` |
+
+## Parser
+
+### 状態遷移図
+```mermaid
+stateDiagram-v2
+    S0-->S1 : NumberToken
+    S0-->S2 : OperatorToken(IsPulusMinus)
+
+    S1-->S0 : OperatorToken
+
+    S2-->S1 : NumberToken
+
+
+```
+
+### 状態遷移表
+
+| 状態 | NumberToken  | OperatorToken(IsPlusMinus) | OperatorToken(Other) |
+| ---- | ------------ | -------------------------- | -------------------- |
+| S0   | AppendToTree | SetSign                    | Error                |
+| S1   | Error        | SetOperator                | SetOperator          |
+| S2   | AppendToTree | Error                      | Error                |
+
