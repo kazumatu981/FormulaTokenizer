@@ -1,4 +1,5 @@
 using FormulaTokenizer;
+using FormulaTokenizer.Exceptions;
 using Xunit;
 
 namespace FormulaTokenizer.Test;
@@ -16,5 +17,19 @@ public class NumberTokenTest
         var actual = numberToken.GetValue();
 
         Assert.Equal(expected, actual);
+    }
+    [Theory]
+    [InlineData("12a3")]
+    [InlineData("12+3")]
+    [InlineData("(123")]
+    [InlineData("123  ")]
+    [InlineData("123@")]
+    [InlineData("1^23")]
+    public void UnexpectedChar(string test)
+    {
+        Assert.Throws<UnexpectedCharException>(() =>
+        {
+            _ = new NumberToken(test);
+        });
     }
 }

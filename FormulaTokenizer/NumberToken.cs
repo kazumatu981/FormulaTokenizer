@@ -1,8 +1,14 @@
+using FormulaTokenizer.Exceptions;
+
 namespace FormulaTokenizer;
 
 public class NumberToken : Token
 {
-    public NumberToken(string text) : base(TokenType.Number, text) { }
+    public NumberToken(string text) : base(TokenType.Number, text)
+    {
+        if (text.GetChars(false).Any(c => c.GetCharType() != CharType.Zero && c.GetCharType() != CharType.NonZeroNumber))
+            throw new UnexpectedCharException();
+    }
 
     public override int GetValue()
     {
