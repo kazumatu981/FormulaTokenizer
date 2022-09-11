@@ -6,59 +6,82 @@ public enum ParseState
 }
 public class ParseTree
 {
-    private Token? RootToken;
 
+    #region Public Member
+
+    #region Constructors
+    public ParseTree(IEnumerable<Token> tokens)
+    {
+        builder = new TreeBuilder();
+        Parse(tokens);
+    }
+    #endregion
+
+    #region Properties
+    public int? Result => builder.RootToken?.GetValue();
+    #endregion
+    #region Methods
+    #endregion
+    #endregion
+
+    #region Private Members
     private ParseState CurrentState = ParseState.S0;
     private TreeBuilder builder = new();
+    private void Parse(IEnumerable<Token> tokens)
+    {
+        foreach (Token token in tokens)
+        {
+            builder = RebuildTree(token);
+            CurrentState = GetNextState(token);
+        }
+    }
+    private TreeBuilder RebuildTree(Token token)
+        => (CurrentState, token) switch
+        {
+            (ParseState.S0, NumberToken t) => builder.AppdendToTree(t).Clear(),
+            (ParseState.S0, OperatorToken t) when t.IsPlusMinus => builder.SetSign(t),
 
+            (ParseState.S1, OperatorToken t) when t.IsPlusMinus => builder.SetOperator(t),
+            (ParseState.S1, OperatorToken t) => builder.SetOperator(t),
+
+            (ParseState.S2, NumberToken t) => builder.AppdendToTree(t).Clear(),
+
+            _ => throw new NotImplementedException()
+        };
+    private ParseState GetNextState(Token token)
+        => (CurrentState, token) switch
+        {
+            (ParseState.S0, NumberToken) => ParseState.S1,
+            (ParseState.S0, OperatorToken t) when t.IsPlusMinus => ParseState.S2,
+
+            (ParseState.S1, OperatorToken t) when t.IsPlusMinus => ParseState.S0,
+            (ParseState.S1, OperatorToken) => ParseState.S0,
+
+            (ParseState.S2, NumberToken) => ParseState.S1,
+
+            _ => throw new NotImplementedException()
+        };
+    #endregion
+
+    #region [Define Of Sub-class]: TreeBuilder
     private class TreeBuilder
     {
         public Token? RootToken;
-        public OperatorToken? Sign;
-        public OperatorToken? Operator;
-
+        private OperatorToken? Sign;
+        private OperatorToken? Operator;
         public TreeBuilder AppdendToTree(NumberToken numberToken)
         {
-            Token toBeAppend = numberToken;
-            if (Sign != null)
-            {
-                Sign.RightHand = numberToken;
-                toBeAppend = Sign;
-            }
+            Token toBeAppend = GenerateBlanch(numberToken);
 
-            if (RootToken == null)
+            return (RootToken, Operator) switch
             {
-                RootToken = toBeAppend;
-            }
-            else if (RootToken is NumberToken)
-            {
-                if (Operator != null)
-                {
-                    Operator.LeftHand = RootToken;
-                    Operator.RightHand = toBeAppend;
-                    RootToken = Operator;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            else if (RootToken is OperatorToken currentRootOperator)
-            {
-                if (Operator != null)
-                {
-                    Operator.LeftHand = currentRootOperator.RightHand;
-                    Operator.RightHand = toBeAppend;
-                    currentRootOperator.RightHand = Operator;
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-            }
-            return this;
+                (null, _) => SetRoot(toBeAppend),
+                (NumberToken, _) => AppendToRoot(toBeAppend),
+                (OperatorToken, OperatorToken op) when op.IsPlusMinus => AppendToRoot(toBeAppend),
+                (OperatorToken, _) => SwapRootRightHand(toBeAppend),
+                _ => throw new NotImplementedException()
+            };
         }
-
         public TreeBuilder SetSign(OperatorToken? token)
         {
             Sign = token;
@@ -69,56 +92,55 @@ public class ParseTree
             Operator = token;
             return this;
         }
-    }
-
-    public Token? Parse(IEnumerable<Token> tokens)
-    {
-        foreach (Token token in tokens)
+        public TreeBuilder Clear()
         {
-            var nextState = GetNextState(token);
-            _ = ChangeTree(token);
-
-            CurrentState = nextState;
-
+            _ = SetSign(null);
+            _ = SetOperator(null);
+            return this;
         }
-        return builder.RootToken;
-    }
-
-    private ParseState GetNextState(Token token)
-    {
-        return (CurrentState, token) switch
+        private Token GenerateBlanch(NumberToken numberToken)
         {
-            (ParseState.S0, NumberToken) => ParseState.S1,
-            (ParseState.S0, OperatorToken t) when t.IsPlusMinus => ParseState.S2,
-            (ParseState.S0, OperatorToken) => throw new NotImplementedException(),
-
-            (ParseState.S1, NumberToken) => throw new NotImplementedException(),
-            (ParseState.S1, OperatorToken t) when t.IsPlusMinus => ParseState.S0,
-            (ParseState.S1, OperatorToken) => ParseState.S0,
-
-            (ParseState.S2, NumberToken) => ParseState.S1,
-
-            _ => throw new NotImplementedException()
-        };
-    }
-
-    private TreeBuilder ChangeTree(Token token)
-    {
-        return (CurrentState, token) switch
+            Token blanch = numberToken;
+            if (Sign != null)
+            {
+                Sign.RightHand = numberToken;
+                blanch = Sign;
+            }
+            return blanch;
+        }
+        private TreeBuilder SetRoot(Token token)
         {
-            (ParseState.S0, NumberToken t) => builder.AppdendToTree(t).SetSign(null).SetOperator(null),
-            (ParseState.S0, OperatorToken t) when t.IsPlusMinus => builder.SetSign(t),
-            (ParseState.S0, OperatorToken) => throw new NotImplementedException(),
-
-            (ParseState.S1, NumberToken) => throw new NotImplementedException(),
-            (ParseState.S1, OperatorToken t) when t.IsPlusMinus => builder.SetOperator(t),
-            (ParseState.S1, OperatorToken t) => builder.SetOperator(t),
-
-            (ParseState.S2, NumberToken t) => builder.AppdendToTree(t).SetSign(null).SetOperator(null),
-
-            _ => throw new NotImplementedException()
-        };
-
+            RootToken = token;
+            return this;
+        }
+        private TreeBuilder AppendToRoot(Token token)
+        {
+            if (Operator != null)
+            {
+                Operator.LeftHand = RootToken;
+                Operator.RightHand = token;
+                RootToken = Operator;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+            return this;
+        }
+        private TreeBuilder SwapRootRightHand(Token token)
+        {
+            if (Operator != null && RootToken is OperatorToken currentRootOperator)
+            {
+                Operator.LeftHand = currentRootOperator.RightHand;
+                Operator.RightHand = token;
+                currentRootOperator.RightHand = Operator;
+            }
+            else
+            {
+                throw new NotImplementedException();
+            }
+            return this;
+        }
     }
-    public int? Run() => RootToken?.GetValue();
+    #endregion
 }
