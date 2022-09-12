@@ -18,6 +18,7 @@ public class ParseTree
     #endregion
 
     #region Properties
+    public Token? RootToken => builder.RootToken;
     public int? Result => builder.RootToken?.GetValue();
     #endregion
     #region Methods

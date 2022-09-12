@@ -6,6 +6,14 @@ namespace FormulaTokenizer.Test;
 
 public class NumberTokenTest
 {
+    [Fact]
+    public void TokenTypeIsNumber()
+    {
+        var expected = TokenType.Number;
+        var actual = new NumberToken("1").Type;
+
+        Assert.Equal(expected, actual);
+    }
     [Theory]
     [InlineData("123", 123)]
     [InlineData("103", 103)]

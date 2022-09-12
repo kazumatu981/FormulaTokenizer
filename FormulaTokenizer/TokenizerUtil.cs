@@ -13,7 +13,7 @@ public enum CharType
 public static class TokenizerUtil
 {
     public static IEnumerable<Token> Tokenize(this IEnumerable<char> characters)
-        => (new Tokenizer(characters)).Result;
+        => (new Tokenizer()).Map(characters);
     public static CharType GetCharType(this char thisChar)
     {
         var charType = thisChar switch

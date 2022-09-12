@@ -1,8 +1,6 @@
-using System;
-
 namespace FormulaTokenizer.Exceptions;
 
-public class UnexpectedCharException : Exception
+public class UnexpectedTokenException : Exception
 {
     // TODO: Override Excetion
 }

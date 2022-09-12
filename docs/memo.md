@@ -1,5 +1,51 @@
 # メモ
 
+## global class diagram
+
+```mermaid
+classDiagram
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Token
+    class Token {
+        TokenType Type
+        string Text
+
+        int GetValue()
+    }
+    class NumberToken {
+        
+    }
+    class OperatorToken {
+        OperatorKind Kind
+        Token? LeftHand
+        Token? RightHand
+    }
+
+    Token<|--NumberToken
+    Token<|--OperatorToken
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Tokenizer
+    class TokenizerUtils {
+        <<static>>
+    }
+    class Tokenizer {
+
+    }
+    TokenizerUtils ..> Tokenizer:use
+
+    class ParseTreeUtils {
+        <<static>>
+    }
+    class ParseTree {
+
+    }
+    ParseTreeUtils ..> ParseTree:use
+
+```
+
+
 ## Tokenizer
 
 ### 状態一覧
