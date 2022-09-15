@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Text;
+using FormulaTokenizer.Exceptions;
 using FormulaTokenizer.Model;
 
 namespace FormulaTokenizer;
@@ -27,6 +28,10 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
         base.Initialize();
         generator.Clean();
     }
+    public override void Uninitialize()
+    {
+        // nothing to-do;
+    }
 
     protected override Token? ElementMap(char element)
         => (State, element.GetCharType()) switch
@@ -53,7 +58,7 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
             (TokenizeState.Op, CharType.WhiteSpace) => generator.Drain(),
             (TokenizeState.Op, CharType.EOL) => generator.Drain(),
 
-            _ => throw new NotImplementedException()
+            _ => throw new UnexpectedCharException()
         };
     protected override TokenizeState GetNextState(char character)
         => (State, character.GetCharType()) switch
@@ -80,7 +85,7 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
             (TokenizeState.Op, CharType.WhiteSpace) => TokenizeState.S0,
             (TokenizeState.Op, CharType.EOL) => TokenizeState.S0,
 
-            _ => throw new NotImplementedException()
+            _ => throw new UnexpectedCharException()
         };
     #endregion
     #endregion

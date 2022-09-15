@@ -42,11 +42,11 @@ public class UnitTest1
     {
         var expected = new Token[]
         {
-            new NumberToken( "111"),
-            new OperatorToken ( "+"),
-            new NumberToken(  "0"),
-            new OperatorToken( "*"),
-            new NumberToken(  "124"),
+            new NumberToken("111"),
+            new OperatorToken("+"),
+            new NumberToken("0"),
+            new OperatorToken("*"),
+            new NumberToken("124"),
         };
 
         var actual = test

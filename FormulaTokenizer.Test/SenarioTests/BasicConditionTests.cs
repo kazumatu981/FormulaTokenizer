@@ -6,6 +6,14 @@ namespace FormulaTokenizer.Test.SenarioTests;
 public class BasicConditionTests
 {
     [Theory]
+    // 一項計算
+    [InlineData("1", 1)]
+    [InlineData("+2", 2)]
+    [InlineData("-3", -3)]
+    [InlineData(" -3", -3)]
+    [InlineData("-  3", -3)]
+    [InlineData(" - 3  ", -3)]
+    [InlineData("-3    ", -3)]
     // 二項計算
     [InlineData("1+2", 3)]
     [InlineData("9*9", 81)]
@@ -33,7 +41,7 @@ public class BasicConditionTests
     [InlineData("-1+ - 2", -3)]
     public void BasicTest(string formula, int expected)
     {
-        var actual = formula.GetChars().Tokenize().Parse().Result;
+        var actual = formula.GetChars().Tokenize().Parse()?.RootToken?.GetValue();
         Assert.Equal(expected, actual);
     }
 }
