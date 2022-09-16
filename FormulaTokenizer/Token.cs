@@ -1,4 +1,8 @@
-﻿namespace FormulaTokenizer;
+﻿// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+namespace FormulaTokenizer;
 
 public enum TokenType
 {
@@ -13,7 +17,7 @@ public abstract class Token
 
     public abstract int GetValue();
 
-    public Token(TokenType type, string text)
+    protected Token(TokenType type, string text)
     {
         Type = type;
         Text = text;

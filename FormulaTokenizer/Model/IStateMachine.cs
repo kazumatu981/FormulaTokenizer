@@ -1,3 +1,9 @@
+// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+
 namespace FormulaTokenizer.Model;
 
 /// <summary>
@@ -7,7 +13,7 @@ namespace FormulaTokenizer.Model;
 /// <typeparam name="TState">状態</typeparam>
 /// <typeparam name="TOutElement">遷移時の出力オブジェクト型</typeparam>
 /// <typeparam name="TInElement">入力オブジェクト型</typeparam>
-public interface IStateMachine<TState, TOutElement, TInElement>
+public interface IStateMachine<out TState, out TOutElement, in TInElement>
     where TState : Enum
 {
     /// <summary>

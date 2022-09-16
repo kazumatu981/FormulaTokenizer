@@ -1,3 +1,7 @@
+// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 using FormulaTokenizer.Exceptions;
 
 namespace FormulaTokenizer;
@@ -14,11 +18,12 @@ public class ParseTree
     #endregion
 
     #region Properties
-    public Token? RootToken;
+    private Token? _rootToken;
+    public Token? RootToken => _rootToken;
     #endregion
     #region Methods
     public ParseTree AppendBlanch(Token blanch)
-    => (RootToken, blanch) switch
+    => (_rootToken, blanch) switch
     {
         (null, _)
             => SetToRoot(blanch),
@@ -36,13 +41,13 @@ public class ParseTree
     #region Private Member
     private ParseTree SetToRoot(Token blanch)
     {
-        RootToken = blanch;
+        _rootToken = blanch;
         return this;
     }
     private ParseTree SwapRoot(OperatorToken operatorBlanch)
     {
-        operatorBlanch.LeftHand = RootToken;
-        RootToken = operatorBlanch;
+        operatorBlanch.LeftHand = _rootToken;
+        _rootToken = operatorBlanch;
         return this;
     }
     private ParseTree SwapRightHandOfRoot(

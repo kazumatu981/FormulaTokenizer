@@ -1,3 +1,9 @@
+// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System.Linq;
+
 using FormulaTokenizer.Exceptions;
 
 namespace FormulaTokenizer;
@@ -13,7 +19,7 @@ public class NumberToken : Token
     public override int GetValue()
     {
         var ret = 0;
-        foreach (char c in Text.GetChars(false))
+        foreach (var c in Text.GetChars(false))
         {
             ret *= 10;
             ret += c - '0';

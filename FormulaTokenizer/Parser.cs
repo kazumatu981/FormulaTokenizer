@@ -1,3 +1,7 @@
+// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 using FormulaTokenizer.Exceptions;
 using FormulaTokenizer.Model;
 namespace FormulaTokenizer;
@@ -22,23 +26,23 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
     #region Methods
     public override void Uninitialize()
     {
-        if (generator.HasCash) throw new UnexpectedTokenException();
+        if (_generator.HasCash) throw new UnexpectedTokenException();
     }
     #endregion
     #endregion
 
     #region Private Members
-    private readonly BlanchGenerator generator = new();
+    private readonly BlanchGenerator _generator = new();
     protected override Token? ElementMap(Token token)
         => (State, token) switch
         {
-            (ParseState.S0, NumberToken t) => generator.GenerateBlanch(t),
-            (ParseState.S0, OperatorToken t) when t.IsPlusMinus => generator.SetSign(t),
+            (ParseState.S0, NumberToken t) => _generator.GenerateBlanch(t),
+            (ParseState.S0, OperatorToken t) when t.IsPlusMinus => _generator.SetSign(t),
 
-            (ParseState.S1, OperatorToken t) when t.IsPlusMinus => generator.SetOperator(t),
-            (ParseState.S1, OperatorToken t) => generator.SetOperator(t),
+            (ParseState.S1, OperatorToken t) when t.IsPlusMinus => _generator.SetOperator(t),
+            (ParseState.S1, OperatorToken t) => _generator.SetOperator(t),
 
-            (ParseState.S2, NumberToken t) => generator.GenerateBlanch(t),
+            (ParseState.S2, NumberToken t) => _generator.GenerateBlanch(t),
 
             _ => throw new UnexpectedTokenException()
         };
@@ -61,19 +65,19 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
     #endregion
 
     #region [Define Of Sub-class]: BlanchGenerator
-    private class BlanchGenerator
+    private sealed class BlanchGenerator
     {
-        private OperatorToken? Sign;
-        private OperatorToken? Operator;
-        public bool HasCash => Sign != null || Operator != null;
+        private OperatorToken? _signToken;
+        private OperatorToken? _operatorToken;
+        public bool HasCash => _signToken != null || _operatorToken != null;
         public Token? SetSign(OperatorToken? token)
         {
-            Sign = token;
+            _signToken = token;
             return null;
         }
         public Token? SetOperator(OperatorToken? token)
         {
-            Operator = token;
+            _operatorToken = token;
             return null;
         }
         private void Clear()
@@ -84,15 +88,15 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
         public Token GenerateBlanch(NumberToken numberToken)
         {
             Token blanch = numberToken;
-            if (Sign != null)
+            if (_signToken != null)
             {
-                Sign.RightHand = numberToken;
-                blanch = Sign;
+                _signToken.RightHand = numberToken;
+                blanch = _signToken;
             }
-            if (Operator != null)
+            if (_operatorToken != null)
             {
-                Operator.RightHand = blanch;
-                blanch = Operator;
+                _operatorToken.RightHand = blanch;
+                blanch = _operatorToken;
             }
             Clear();
             return blanch;

@@ -1,4 +1,8 @@
-using System.Collections.Generic;
+// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
 using System.Text;
 using FormulaTokenizer.Exceptions;
 using FormulaTokenizer.Model;
@@ -11,7 +15,7 @@ public enum TokenizeState
 }
 public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
 {
-    private readonly TokenGenerator generator = new();
+    private readonly TokenGenerator _generator = new();
 
     #region Public Members
     #region Constructors
@@ -26,37 +30,37 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
     public override void Initialize()
     {
         base.Initialize();
-        generator.Clean();
+        _generator.Clean();
     }
     public override void Uninitialize()
     {
-        // nothing to-do;
+        // nothing to-do
     }
 
     protected override Token? ElementMap(char element)
         => (State, element.GetCharType()) switch
         {
-            (TokenizeState.S0, CharType.Zero) => generator.NewToken(TokenType.Number, element),
-            (TokenizeState.S0, CharType.NonZeroNumber) => generator.NewToken(TokenType.Number, element),
-            (TokenizeState.S0, CharType.Operator) => generator.NewToken(TokenType.Operator, element),
+            (TokenizeState.S0, CharType.Zero) => _generator.NewToken(TokenType.Number, element),
+            (TokenizeState.S0, CharType.NonZeroNumber) => _generator.NewToken(TokenType.Number, element),
+            (TokenizeState.S0, CharType.Operator) => _generator.NewToken(TokenType.Operator, element),
             (TokenizeState.S0, CharType.WhiteSpace) => null,
             (TokenizeState.S0, CharType.EOL) => null,
 
-            (TokenizeState.Num0, CharType.Operator) => generator.DrainAndNewToken(TokenType.Operator, element),
-            (TokenizeState.Num0, CharType.WhiteSpace) => generator.Drain(),
-            (TokenizeState.Num0, CharType.EOL) => generator.Drain(),
+            (TokenizeState.Num0, CharType.Operator) => _generator.DrainAndNewToken(TokenType.Operator, element),
+            (TokenizeState.Num0, CharType.WhiteSpace) => _generator.Drain(),
+            (TokenizeState.Num0, CharType.EOL) => _generator.Drain(),
 
-            (TokenizeState.Num1, CharType.Zero) => generator.Keep(element),
-            (TokenizeState.Num1, CharType.NonZeroNumber) => generator.Keep(element),
-            (TokenizeState.Num1, CharType.Operator) => generator.DrainAndNewToken(TokenType.Operator, element),
-            (TokenizeState.Num1, CharType.WhiteSpace) => generator.Drain(),
-            (TokenizeState.Num1, CharType.EOL) => generator.Drain(),
+            (TokenizeState.Num1, CharType.Zero) => _generator.Keep(element),
+            (TokenizeState.Num1, CharType.NonZeroNumber) => _generator.Keep(element),
+            (TokenizeState.Num1, CharType.Operator) => _generator.DrainAndNewToken(TokenType.Operator, element),
+            (TokenizeState.Num1, CharType.WhiteSpace) => _generator.Drain(),
+            (TokenizeState.Num1, CharType.EOL) => _generator.Drain(),
 
-            (TokenizeState.Op, CharType.Zero) => generator.DrainAndNewToken(TokenType.Number, element),
-            (TokenizeState.Op, CharType.NonZeroNumber) => generator.DrainAndNewToken(TokenType.Number, element),
-            (TokenizeState.Op, CharType.Operator) => generator.DrainAndNewToken(TokenType.Operator, element),
-            (TokenizeState.Op, CharType.WhiteSpace) => generator.Drain(),
-            (TokenizeState.Op, CharType.EOL) => generator.Drain(),
+            (TokenizeState.Op, CharType.Zero) => _generator.DrainAndNewToken(TokenType.Number, element),
+            (TokenizeState.Op, CharType.NonZeroNumber) => _generator.DrainAndNewToken(TokenType.Number, element),
+            (TokenizeState.Op, CharType.Operator) => _generator.DrainAndNewToken(TokenType.Operator, element),
+            (TokenizeState.Op, CharType.WhiteSpace) => _generator.Drain(),
+            (TokenizeState.Op, CharType.EOL) => _generator.Drain(),
 
             _ => throw new UnexpectedCharException()
         };
@@ -94,36 +98,36 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
 
     #endregion
     #region [Define Of Sub-class]: TokenGenerator
-    private class TokenGenerator
+    private sealed class TokenGenerator
     {
-        readonly StringBuilder builder = new();
-        private TokenType CurrentTokenType = TokenType.Unknown;
+        readonly StringBuilder _builder = new();
+        private TokenType _currentTokenType = TokenType.Unknown;
 
         public void Clean()
         {
-            builder.Clear();
-            CurrentTokenType = TokenType.Unknown;
+            _builder.Clear();
+            _currentTokenType = TokenType.Unknown;
         }
 
         public Token? NewToken(TokenType type, char character)
         {
-            builder.Clear();
-            CurrentTokenType = type;
-            builder.Append(character);
+            _builder.Clear();
+            _currentTokenType = type;
+            _builder.Append(character);
             return null;
         }
 
         public Token? Keep(char character)
         {
-            builder.Append(character);
+            _builder.Append(character);
             return null;
         }
 
         public Token Drain()
-            => CurrentTokenType switch
+            => _currentTokenType switch
             {
-                TokenType.Number => new NumberToken(builder.ToString()),
-                TokenType.Operator => new OperatorToken(builder.ToString()),
+                TokenType.Number => new NumberToken(_builder.ToString()),
+                TokenType.Operator => new OperatorToken(_builder.ToString()),
                 _ => throw new NotImplementedException()
             };
 

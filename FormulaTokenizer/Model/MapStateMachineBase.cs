@@ -1,3 +1,10 @@
+// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
+using System;
+using System.Collections.Generic;
+
 namespace FormulaTokenizer.Model;
 
 /// <summary>
@@ -13,15 +20,15 @@ public abstract class MapStateMachineBase<TState, TOutElement, TInElement>
     /// <summary>
     /// 初期状態
     /// </summary>
-    private readonly TState InitialState;
+    private readonly TState _initialState;
     /// <summary>
     /// 基本コンストラクタ。初期状態を指定してステートマシンを生成する。
     /// </summary>
     /// <param name="inilialState">初期状態</param>
     protected MapStateMachineBase(TState inilialState)
     {
-        InitialState = inilialState;
-        State = InitialState;
+        _initialState = inilialState;
+        State = _initialState;
     }
     #region Public Members
     #region Implementation Of IStateMachine
@@ -35,7 +42,7 @@ public abstract class MapStateMachineBase<TState, TOutElement, TInElement>
     /// </summary>
     public virtual void Initialize()
     {
-        State = InitialState;
+        State = _initialState;
     }
     public abstract void Uninitialize();
 
@@ -60,7 +67,7 @@ public abstract class MapStateMachineBase<TState, TOutElement, TInElement>
     public IEnumerable<TOutElement> Map(IEnumerable<TInElement> elements)
     {
         Initialize();
-        foreach (TInElement element in elements)
+        foreach (var element in elements)
         {
             if (GoToNextState(element) is TOutElement result)
             {
@@ -78,12 +85,12 @@ public abstract class MapStateMachineBase<TState, TOutElement, TInElement>
     /// </summary>
     /// <param name="element">入力オブジェクト</param>
     /// <returns>出力オブジェクト</returns>
-    abstract protected TOutElement? ElementMap(TInElement element);
+    protected abstract TOutElement? ElementMap(TInElement element);
     /// <summary>
     /// 現在の状態から次の状態を算出する。
     /// </summary>
     /// <param name="element">入力オブジェクト</param>
     /// <returns>次の状態</returns>
-    abstract protected TState GetNextState(TInElement element);
+    protected abstract TState GetNextState(TInElement element);
     #endregion
 }

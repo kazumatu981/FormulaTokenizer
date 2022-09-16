@@ -1,3 +1,7 @@
+// (c) Kazuyoshi Matsumoto.
+// Kazuyoshi Matsumoto licenses this file to you under the MIT license.
+// See the LICENSE file in the project root for more information.
+
 using System.Linq;
 using FormulaTokenizer.Test.Comparer;
 using Xunit;
@@ -6,7 +10,7 @@ namespace FormulaTokenizer.Test;
 
 public class UnitTest1
 {
-    FormulaTokenComparer toeknComparer = new();
+    private readonly FormulaTokenComparer _toeknComparer = new();
 
     [Theory]
     [InlineData("1+234")]
@@ -28,7 +32,7 @@ public class UnitTest1
         var actual = test
             .GetChars()
             .Tokenize();
-        Assert.Equal(expected, actual, toeknComparer);
+        Assert.Equal(expected, actual, _toeknComparer);
 
     }
     [Theory]
@@ -53,7 +57,7 @@ public class UnitTest1
             .GetChars()
             .Tokenize();
 
-        Assert.Equal(expected, actual, toeknComparer);
+        Assert.Equal(expected, actual, _toeknComparer);
     }
 
     [Theory]
@@ -77,7 +81,7 @@ public class UnitTest1
            .GetChars()
            .Tokenize();
 
-        Assert.Equal(expected, actual, toeknComparer);
+        Assert.Equal(expected, actual, _toeknComparer);
     }
 
 }
