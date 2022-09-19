@@ -25,14 +25,20 @@ public class ParseTree
     public ParseTree AppendBlanch(Token blanch)
     => (_rootToken, blanch) switch
     {
-        (null, _)
-            => SetToRoot(blanch),
-        (_, OperatorToken operatorToken) when operatorToken.IsPlusMinus
-            => SwapRoot(operatorToken),
-        (NumberToken, OperatorToken operatorBlanch)
-            => SwapRoot(operatorBlanch),
-        (OperatorToken rootOperatorToken, OperatorToken operatorBlanch)
-            => SwapRightHandOfRoot(rootOperatorToken, operatorBlanch),
+        // RootToken is null
+        (null, OperatorToken) => SetToRoot(blanch),
+        (null, NumberToken) => SetToRoot(blanch),
+
+        // RootToken is NumberToken
+        (NumberToken, OperatorToken blanchOperator) => SwapRoot(blanchOperator),
+
+        // RootToken is OperatorToken
+        (OperatorToken, OperatorToken blanchOperator) when blanchOperator.IsPlusMinus
+            => SwapRoot(blanchOperator),
+        (OperatorToken rootOperator, OperatorToken blanchOperator)
+            => SwapRightHandOfRoot(rootOperator, blanchOperator),
+
+        // Others are Unexpected
         _ => throw new UnexpectedTokenException()
     };
     #endregion
