@@ -86,6 +86,6 @@ var gausianCalc = new GaussianIntegerCalc();
 var result = gausianCalc.Run("(1+i) * (1-i)");
 
 Assert.Type<Gausian>(resuslt);
-Assert.Equal(1, result.Real);
-Assert.Equal(1, result.Imaginary);
+Assert.Equal(2, result.Real);
+Assert.Equal(0, result.Imaginary);
 ```
