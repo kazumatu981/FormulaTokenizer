@@ -2,6 +2,8 @@
 // Kazuyoshi Matsumoto licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
+using System.Collections.Generic;
+
 using FormulaTokenizer.Exceptions;
 using FormulaTokenizer.Model;
 namespace FormulaTokenizer;
@@ -23,13 +25,17 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
 
     #region Properties
     #endregion
-    #region Methods
-    public override void Uninitialize()
+    #endregion
+
+    public override IEnumerable<Token> Map(IEnumerable<Token> elements)
     {
+        var mapResults = base.Map(elements);
+        foreach (var result in mapResults)
+        {
+            yield return result;
+        }
         if (_generator.HasCash) throw new UnexpectedTokenException();
     }
-    #endregion
-    #endregion
 
     #region Private Members
     private readonly ParseTreeBlanchGenerator _generator = new();
@@ -46,9 +52,6 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
 
             _ => throw new UnexpectedTokenException()
         };
-
-    protected override ParseTree? ElementReduce(ParseTree? previousResult, Token nextElement)
-        => previousResult?.AppendBlanch(nextElement);
     protected override ParseState GetNextState(Token token)
         => (State, token) switch
         {
@@ -62,5 +65,8 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
 
             _ => throw new UnexpectedTokenException()
         };
+    protected override ParseTree? ElementReduce(ParseTree? previousResult, Token nextElement)
+        => previousResult?.AppendBlanch(nextElement);
     #endregion
+
 }
