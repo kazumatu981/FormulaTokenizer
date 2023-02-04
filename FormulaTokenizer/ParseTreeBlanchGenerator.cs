@@ -10,7 +10,7 @@ sealed class ParseTreeBlanchGenerator
 {
     private OperatorToken? _signToken;
     private OperatorToken? _operatorToken;
-    public bool HasCash => _signToken != null || _operatorToken != null;
+    public bool HasCache => _signToken != null || _operatorToken != null;
     public Token? SetSign(OperatorToken? token)
     {
         _signToken = token;

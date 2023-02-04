@@ -34,7 +34,7 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
         {
             yield return result;
         }
-        if (_generator.HasCash) throw new UnexpectedTokenException();
+        if (_generator.HasCache) throw new UnexpectedTokenException();
     }
 
     #region Private Members
