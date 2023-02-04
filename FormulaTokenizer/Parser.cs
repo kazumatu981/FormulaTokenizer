@@ -32,7 +32,7 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
     #endregion
 
     #region Private Members
-    private readonly BlanchGenerator _generator = new();
+    private readonly ParseTreeBlanchGenerator _generator = new();
     protected override Token? ElementMap(Token token)
         => (State, token) switch
         {
@@ -62,45 +62,5 @@ public class Parser : MapReduceStateMachineBase<ParseState, ParseTree, Token, To
 
             _ => throw new UnexpectedTokenException()
         };
-    #endregion
-
-    #region [Define Of Sub-class]: BlanchGenerator
-    private sealed class BlanchGenerator
-    {
-        private OperatorToken? _signToken;
-        private OperatorToken? _operatorToken;
-        public bool HasCash => _signToken != null || _operatorToken != null;
-        public Token? SetSign(OperatorToken? token)
-        {
-            _signToken = token;
-            return null;
-        }
-        public Token? SetOperator(OperatorToken? token)
-        {
-            _operatorToken = token;
-            return null;
-        }
-        private void Clear()
-        {
-            _ = SetSign(null);
-            _ = SetOperator(null);
-        }
-        public Token GenerateBlanch(NumberToken numberToken)
-        {
-            Token blanch = numberToken;
-            if (_signToken != null)
-            {
-                _signToken.RightHand = numberToken;
-                blanch = _signToken;
-            }
-            if (_operatorToken != null)
-            {
-                _operatorToken.RightHand = blanch;
-                blanch = _operatorToken;
-            }
-            Clear();
-            return blanch;
-        }
-    }
     #endregion
 }
