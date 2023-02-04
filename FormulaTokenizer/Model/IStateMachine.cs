@@ -24,15 +24,11 @@ public interface IStateMachine<out TState, out TOutElement, in TInElement>
     /// <summary>
     /// 状態の初期化
     /// </summary>
-    void Initialize();
+    void Reset();
     /// <summary>
     /// 状態を遷移させ、出力を得る
     /// </summary>
     /// <param name="element">入力オブジェクト</param>
     /// <returns>出力オブジェクト</returns>
     TOutElement? GoToNextState(TInElement element);
-    /// <summary>
-    /// 終了処理
-    /// </summary>
-    void Uninitialize();
 }

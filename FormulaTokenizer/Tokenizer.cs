@@ -27,16 +27,11 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
     #region Properties
     #endregion
     #region Methods
-    public override void Initialize()
+    public override void Reset()
     {
-        base.Initialize();
+        base.Reset();
         _generator.Clean();
     }
-    public override void Uninitialize()
-    {
-        // nothing to-do
-    }
-
     protected override Token? ElementMap(char element)
         => (State, element.GetCharType()) switch
         {
@@ -92,54 +87,5 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
             _ => throw new UnexpectedCharException()
         };
     #endregion
-    #endregion
-    #region Private Members
-
-
-    #endregion
-    #region [Define Of Sub-class]: TokenGenerator
-    private sealed class TokenGenerator
-    {
-        readonly StringBuilder _builder = new();
-        private TokenType _currentTokenType = TokenType.Unknown;
-
-        public void Clean()
-        {
-            _builder.Clear();
-            _currentTokenType = TokenType.Unknown;
-        }
-
-        public Token? NewToken(TokenType type, char character)
-        {
-            _builder.Clear();
-            _currentTokenType = type;
-            _builder.Append(character);
-            return null;
-        }
-
-        public Token? Keep(char character)
-        {
-            _builder.Append(character);
-            return null;
-        }
-
-        public Token Drain()
-            => _currentTokenType switch
-            {
-                TokenType.Number => new NumberToken(_builder.ToString()),
-                TokenType.Operator => new OperatorToken(_builder.ToString()),
-                _ => throw new NotImplementedException()
-            };
-
-        public Token DrainAndNewToken(TokenType nextTokenType, char nextCharacter)
-        {
-            var formulaToken = Drain();
-            if (nextTokenType is TokenType tokenType && nextCharacter is char character)
-            {
-                NewToken(tokenType, character);
-            }
-            return formulaToken;
-        }
-    }
     #endregion
 }

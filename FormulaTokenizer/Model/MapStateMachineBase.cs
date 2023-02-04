@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FormulaTokenizer.Model;
 
@@ -40,11 +41,10 @@ public abstract class MapStateMachineBase<TState, TOutElement, TInElement>
     /// <summary>
     /// 初期化
     /// </summary>
-    public virtual void Initialize()
+    public virtual void Reset()
     {
         State = _initialState;
     }
-    public abstract void Uninitialize();
 
     /// <summary>
     /// 状態遷移の実行
@@ -64,17 +64,12 @@ public abstract class MapStateMachineBase<TState, TOutElement, TInElement>
     /// </summary>
     /// <param name="elements">入力オブジェクトの列挙</param>
     /// <returns>出力オブジェクトの列挙</returns>
-    public IEnumerable<TOutElement> Map(IEnumerable<TInElement> elements)
+    public virtual IEnumerable<TOutElement> Map(IEnumerable<TInElement> elements)
     {
-        Initialize();
-        foreach (var element in elements)
-        {
-            if (GoToNextState(element) is TOutElement result)
-            {
-                yield return result;
-            }
-        }
-        Uninitialize();
+        return elements
+            .Select(element => GoToNextState(element))
+            .Where(x => x is not null)
+            .Cast<TOutElement>();
     }
 
     #endregion
