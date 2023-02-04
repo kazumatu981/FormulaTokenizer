@@ -27,16 +27,11 @@ public class Tokenizer : MapStateMachineBase<TokenizeState, Token, char>
     #region Properties
     #endregion
     #region Methods
-    public override void Initialize()
+    public override void Reset()
     {
-        base.Initialize();
+        base.Reset();
         _generator.Clean();
     }
-    public override void Uninitialize()
-    {
-        // nothing to-do
-    }
-
     protected override Token? ElementMap(char element)
         => (State, element.GetCharType()) switch
         {

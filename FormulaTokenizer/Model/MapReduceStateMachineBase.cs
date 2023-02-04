@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace FormulaTokenizer.Model;
 
@@ -18,16 +19,8 @@ public abstract class MapReduceStateMachineBase<TState, TResult, TOutElement, TI
 
     public TResult? MapReduce(IEnumerable<TInElement> elements, TResult? seed)
     {
-        var mapResults = Map(elements);
-        var result = seed;
-        foreach (var mapResult in mapResults)
-        {
-            if (ElementReduce(result, mapResult) is TResult reduced)
-            {
-                result = reduced;
-            }
-        }
-        return result;
+        return Map(elements)
+            .Aggregate(seed, ElementReduce);
     }
 
     protected abstract TResult? ElementReduce(
